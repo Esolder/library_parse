@@ -40,8 +40,12 @@ def get_book_info(response):
     image_url = urljoin(url, image)
 
     raw_comments = soup.find_all('div', class_='texts')
-    for comment in raw_comments:
-        print(comment.find('span', class_='black').text)
+    comments = [comment.find('span', class_='black').text for comment in raw_comments]
+
+    raw_genres = soup.find('span', class_='d_book').find_all('a')
+    genres = [genre.text for genre in raw_genres]
+
+    print(genres)
 
     return title, author, image_url
 
