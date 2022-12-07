@@ -39,6 +39,10 @@ def get_book_info(response):
     image = soup.find('div', class_='bookimage').find('img')['src']
     image_url = urljoin(url, image)
 
+    raw_comments = soup.find_all('div', class_='texts')
+    for comment in raw_comments:
+        print(comment.find('span', class_='black').text)
+
     return title, author, image_url
 
 
@@ -77,5 +81,5 @@ def download_image(image_url, folder='images/'):
 
 if __name__ == '__main__':
     url = 'https://tululu.org/'
-    book_ids = range(1, 11)
-    download_books(url, book_ids)
+    books_ids = range(1, 11)
+    download_books(url, books_ids)
