@@ -4,6 +4,7 @@ import pathlib
 import pathvalidate
 import requests
 from urllib.parse import urljoin
+import argparse
 
 
 def download_books(url, books_id):
@@ -89,5 +90,19 @@ def download_image(image_url, folder='images/'):
 
 if __name__ == '__main__':
     url = 'https://tululu.org/'
-    books_ids = range(1, 11)
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('--start_id',
+                        type=int,
+                        required=True,
+                        help='The starting book ID')
+    parser.add_argument('--end_id',
+                        type=int,
+                        required=True,
+                        help='The ending book ID')
+
+    args = parser.parse_args()
+
+    books_ids = range(args.start_id, args.end_id)
     download_books(url, books_ids)
