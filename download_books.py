@@ -56,8 +56,9 @@ def parse_book_page(html):
 
 
 def download_txt(url, book_number, title, folder='books/'):
-    filename = f'{book_number}.{title}'
-    filepath = os.path.join(folder, filename.strip() + '.txt')
+    filename = f'{book_number}.{title.strip()}.txt'
+    filename = pathvalidate.sanitize_filename(filename)
+    filepath = os.path.join(folder, filename)
     os.makedirs(os.path.dirname(filepath), exist_ok=True)
 
     params = {'id': book_number}
@@ -70,8 +71,6 @@ def download_txt(url, book_number, title, folder='books/'):
         response.raise_for_status()
     except requests.HTTPError:
         return
-
-    filename = pathvalidate.sanitize_filename(filename)
 
     text = response.content
     if text:
@@ -96,19 +95,19 @@ def download_image(image_url, folder='images/'):
 if __name__ == '__main__':
     url = 'https://tululu.org/'
 
-    # parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser()
 
-    # parser.add_argument('--start_id',
-    #                     type=int,
-    #                     required=True,
-    #                     help='The starting book ID')
-    # parser.add_argument('--end_id',
-    #                     type=int,
-    #                     required=True,
-    #                     help='The ending book ID')
+    parser.add_argument('--start_id',
+                        type=int,
+                        required=True,
+                        help='The starting book ID')
+    parser.add_argument('--end_id',
+                        type=int,
+                        required=True,
+                        help='The ending book ID')
 
-    # args = parser.parse_args()
+    args = parser.parse_args()
 
-    # books_ids = range(args.start_id, args.end_id)
-    books_ids = range(1, 11)
+    books_ids = range(args.start_id, args.end_id + 1)
+
     download_books(url, books_ids)
