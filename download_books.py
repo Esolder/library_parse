@@ -86,6 +86,12 @@ def download_image(image_url, folder='images/'):
 
     response = requests.get(image_url)
 
+    try:
+        check_for_redirect(response)
+        response.raise_for_status()
+    except requests.HTTPError:
+        return
+
     with open(filepath, 'wb') as file:
         file.write(response.content)
 
