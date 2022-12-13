@@ -65,14 +65,19 @@ def download_txt(url, book_number, title, folder='books/'):
                             params=params,
                             allow_redirects=True,
                             timeout=3)
-    response.raise_for_status()
+    try:
+        check_for_redirect(response)
+        response.raise_for_status()
+    except requests.HTTPError:
+        return
 
     filename = pathvalidate.sanitize_filename(filename)
 
-    with open(filepath, 'wb') as file:
-        file.write(response.content)
-
-    return filepath
+    text = response.content
+    if text:
+        with open(filepath, 'wb') as file:
+            file.write(text)
+        return filepath
 
 
 def download_image(image_url, folder='images/'):
@@ -91,18 +96,19 @@ def download_image(image_url, folder='images/'):
 if __name__ == '__main__':
     url = 'https://tululu.org/'
 
-    parser = argparse.ArgumentParser()
+    # parser = argparse.ArgumentParser()
 
-    parser.add_argument('--start_id',
-                        type=int,
-                        required=True,
-                        help='The starting book ID')
-    parser.add_argument('--end_id',
-                        type=int,
-                        required=True,
-                        help='The ending book ID')
+    # parser.add_argument('--start_id',
+    #                     type=int,
+    #                     required=True,
+    #                     help='The starting book ID')
+    # parser.add_argument('--end_id',
+    #                     type=int,
+    #                     required=True,
+    #                     help='The ending book ID')
 
-    args = parser.parse_args()
+    # args = parser.parse_args()
 
-    books_ids = range(args.start_id, args.end_id)
+    # books_ids = range(args.start_id, args.end_id)
+    books_ids = range(1, 11)
     download_books(url, books_ids)
