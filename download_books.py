@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
 import os
-import pathlib
 import pathvalidate
 import requests
 from urllib.parse import urljoin
