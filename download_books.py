@@ -100,7 +100,10 @@ def download_image(image_url, folder='images/'):
 if __name__ == '__main__':
     url = 'https://tululu.org/'
 
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='''Скрипт для загрузки книг с tululu.org. 
+    Скрипт пиринимает два аргумента: 
+    --start_id - для id книги с которой начнётся загрузка
+    --end_id - id книги по которую надо скачать''')
 
     parser.add_argument('--start_id',
                         type=int,
