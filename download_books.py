@@ -18,12 +18,14 @@ def download_books(url, books_id):
         except requests.HTTPError:
             print(f'Не удалось получить данные книги id = {book_number}')
             continue
+        except requests.ConnectionError:
+            pass
 
-        book_info = parse_book_page(BeautifulSoup(response.text, 'lxml'))
+        book_page_info = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
 
         try:
-            download_txt(url, book_number, book_info['title'])
-            download_image(book_info['image_url'])
+            download_txt(url, book_number, book_page_info['title'])
+            download_image(book_page_info['image_url'])
         except requests.HTTPError:
             continue
 
@@ -33,7 +35,7 @@ def check_for_redirect(response):
         raise requests.HTTPError()
 
 
-def parse_book_page(html):
+def parse_book_page(html, url):
     info = html.find('body').find('h1').text
 
     title, author = info.split('::')
