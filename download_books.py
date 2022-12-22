@@ -7,36 +7,38 @@ import argparse
 import time
 
 
-def download_books(url, books_id):
+def main(url, books_id):
     for book_number in books_id:
-        while True:
-            try:
-                response = requests.get(f'{url}b{book_number}/',
-                                        allow_redirects=True,
-                                        timeout=3)
-            except requests.ConnectionError:
-                print('Connection error. Retrying in 5 seconds')
-                time.sleep(5)
-                continue
-            else: break
-        
-
         try:
-            check_for_redirect(response)
-            response.raise_for_status()
+            download_book(url, book_number)
         except requests.HTTPError:
             print(f'Не удалось получить данные книги id = {book_number}')
             continue
-        except requests.ConnectionError:
-            print('нет соединения')
 
-        book_metadata = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
 
+def download_book(url, book_number):
+    while True:
         try:
-            download_txt(url, book_number, book_metadata['title'])
-            download_image(book_metadata['image_url'])
-        except requests.HTTPError:
+            response = requests.get(f'{url}b{book_number}/',
+                                    allow_redirects=True,
+                                    timeout=3)
+        except requests.ConnectionError:
+            print('Connection error. Retrying in 5 seconds')
+            time.sleep(5)
             continue
+        else: break
+    
+
+    check_for_redirect(response)
+    response.raise_for_status()
+
+    book_metadata = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
+
+    try:
+        download_txt(url, book_number, book_metadata['title'])
+        download_image(book_metadata['image_url'])
+    except requests.HTTPError:
+        return
 
 
 def check_for_redirect(response):
@@ -99,12 +101,8 @@ def download_image(image_url, folder='images/'):
 
     response = requests.get(image_url)
 
-    try:
-        check_for_redirect(response)
-        response.raise_for_status()
-    except requests.HTTPError:
-        print(f'Не удалось скачать изображение {filename}')
-        return
+    check_for_redirect(response)
+    response.raise_for_status()
 
     with open(filepath, 'wb') as file:
         file.write(response.content)
@@ -131,6 +129,6 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    books_ids = range(args.start_id, args.end_id + 1)
+    books_id = range(args.start_id, args.end_id + 1)
 
-    download_books(url, books_ids)
+    main(url, books_id)
