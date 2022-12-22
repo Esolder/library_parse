@@ -4,13 +4,22 @@ import pathvalidate
 import requests
 from urllib.parse import urljoin
 import argparse
+import time
 
 
 def download_books(url, books_id):
     for book_number in books_id:
-        response = requests.get(f'{url}b{book_number}/',
-                                allow_redirects=True,
-                                timeout=3)
+        while True:
+            try:
+                response = requests.get(f'{url}b{book_number}/',
+                                        allow_redirects=True,
+                                        timeout=3)
+            except requests.ConnectionError:
+                print('Connection error. Retrying in 5 seconds')
+                time.sleep(5)
+                continue
+            else: break
+        
 
         try:
             check_for_redirect(response)
@@ -19,13 +28,13 @@ def download_books(url, books_id):
             print(f'Не удалось получить данные книги id = {book_number}')
             continue
         except requests.ConnectionError:
-            pass
+            print('нет соединения')
 
-        book_page_info = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
+        book_metadata = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
 
         try:
-            download_txt(url, book_number, book_page_info['title'])
-            download_image(book_page_info['image_url'])
+            download_txt(url, book_number, book_metadata['title'])
+            download_image(book_metadata['image_url'])
         except requests.HTTPError:
             continue
 
@@ -75,11 +84,12 @@ def download_txt(url, book_number, title, folder='books/'):
         print(f'Не удалось скачать текст книги с id = {book_number}')
         return
 
-    text = response.content
-    if text:
-        with open(filepath, 'wb') as file:
-            file.write(text)
-        return filepath
+    if not response.content:
+        return
+    
+    with open(filepath, 'wb') as file:
+        file.write(response.content)
+    return filepath
 
 
 def download_image(image_url, folder='images/'):
