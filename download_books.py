@@ -67,9 +67,9 @@ def check_for_redirect(response):
 
 
 def parse_book_page(html, url):
-    info = html.find('body').find('h1').text
+    header = html.find('body').find('h1').text
 
-    title, author = info.split('::')
+    title, author = header.split('::')
 
     image = html.find('div', class_='bookimage').find('img')['src']
     image_url = urljoin(url, image)
