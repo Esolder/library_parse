@@ -99,9 +99,6 @@ def download_txt(url, book_number, title, folder='books/'):
 
     check_for_redirect(response)
     response.raise_for_status()
-
-    if not response.content:
-        return
     
     with open(filepath, 'wb') as file:
         file.write(response.content)
