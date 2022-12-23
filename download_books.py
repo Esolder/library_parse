@@ -52,11 +52,11 @@ def download_book(url, book_number):
     check_for_redirect(response)
     response.raise_for_status()
 
-    book_metadata = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
+    book = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
 
     try:
-        download_txt(url, book_number, book_metadata['title'])
-        download_image(book_metadata['image_url'])
+        download_txt(url, book_number, book['title'])
+        download_image(book['image_url'])
     except requests.HTTPError:
         return
 
