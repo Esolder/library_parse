@@ -51,7 +51,8 @@ def download_book(url, book_number):
     check_for_redirect(response)
     response.raise_for_status()
 
-    book = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
+    book = parse_book_page(BeautifulSoup(response.text, 'lxml'), 
+                           response.url)
 
     download_txt(url, book_number, book['title'])
     download_image(book['image_url'])
