@@ -8,6 +8,26 @@ import time
 
 
 def main(url, books_id):
+    url = 'https://tululu.org/'
+
+    parser = argparse.ArgumentParser(description='''Скрипт для загрузки книг с tululu.org. 
+    Скрипт пиринимает два аргумента: 
+    --start_id - для id книги с которой начнётся загрузка
+    --end_id - id книги по которую надо скачать''')
+
+    parser.add_argument('--start_id',
+                        type=int,
+                        required=True,
+                        help='The starting book ID')
+    parser.add_argument('--end_id',
+                        type=int,
+                        required=True,
+                        help='The ending book ID')
+
+    args = parser.parse_args()
+
+    books_id = range(args.start_id, args.end_id + 1)
+
     for book_number in books_id:
         try:
             download_book(url, book_number)
@@ -111,24 +131,4 @@ def download_image(image_url, folder='images/'):
 
 
 if __name__ == '__main__':
-    url = 'https://tululu.org/'
-
-    parser = argparse.ArgumentParser(description='''Скрипт для загрузки книг с tululu.org. 
-    Скрипт пиринимает два аргумента: 
-    --start_id - для id книги с которой начнётся загрузка
-    --end_id - id книги по которую надо скачать''')
-
-    parser.add_argument('--start_id',
-                        type=int,
-                        required=True,
-                        help='The starting book ID')
-    parser.add_argument('--end_id',
-                        type=int,
-                        required=True,
-                        help='The ending book ID')
-
-    args = parser.parse_args()
-
-    books_id = range(args.start_id, args.end_id + 1)
-
-    main(url, books_id)
+    main()
