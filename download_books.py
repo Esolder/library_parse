@@ -53,11 +53,8 @@ def download_book(url, book_number):
 
     book = parse_book_page(BeautifulSoup(response.text, 'lxml'), url)
 
-    try:
-        download_txt(url, book_number, book['title'])
-        download_image(book['image_url'])
-    except requests.HTTPError:
-        return
+    download_txt(url, book_number, book['title'])
+    download_image(book['image_url'])
 
 
 def check_for_redirect(response):
@@ -98,12 +95,9 @@ def download_txt(url, book_number, title, folder='books/'):
                             params=params,
                             allow_redirects=True,
                             timeout=3)
-    try:
-        check_for_redirect(response)
-        response.raise_for_status()
-    except requests.HTTPError:
-        print(f'Не удалось скачать текст книги с id = {book_number}')
-        return
+
+    check_for_redirect(response)
+    response.raise_for_status()
 
     if not response.content:
         return
