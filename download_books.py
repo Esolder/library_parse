@@ -7,7 +7,7 @@ import argparse
 import time
 
 
-def main(url, books_id):
+def main():
     url = 'https://tululu.org/'
 
     parser = argparse.ArgumentParser(description='''Скрипт для загрузки книг с tululu.org. 
@@ -30,24 +30,23 @@ def main(url, books_id):
 
     for book_number in books_id:
         try:
-            download_book(url, book_number)
+            while True:
+                try:
+                    download_book(url, book_number)
+                except requests.ConnectionError:
+                    print('Connection error. Retrying in 5 seconds')
+                    time.sleep(5)
+                    continue
+                else: break
         except requests.HTTPError:
             print(f'Не удалось получить данные книги id = {book_number}')
             continue
 
 
 def download_book(url, book_number):
-    while True:
-        try:
-            response = requests.get(f'{url}b{book_number}/',
-                                    allow_redirects=True,
-                                    timeout=3)
-        except requests.ConnectionError:
-            print('Connection error. Retrying in 5 seconds')
-            time.sleep(5)
-            continue
-        else: break
-    
+    response = requests.get(f'{url}b{book_number}/',
+                            allow_redirects=True,
+                            timeout=3)
 
     check_for_redirect(response)
     response.raise_for_status()
